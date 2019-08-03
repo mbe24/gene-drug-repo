@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "iDASH track 1",
   "scripts": {
-    "contracts-lint": "solhint **/*.sol"
+    "solhint": "solhint -f table contracts/**/*.sol",
+    "prettier:solidity": "prettier --write contracts/**/*.sol"
   },
   "repository": {
     "type": "git",
@@ -26,9 +27,12 @@
   "license": "LGPL-3.0",
   "dependencies": {},
   "devDependencies": {
-    "truffle": "^5.0.30",
     "mocha": "^6.2.0",
+    "prettier": "^1.18.2",
+    "prettier-plugin-solidity": "^1.0.0-alpha.27",
     "solc": "^0.5.8",
-    "solhint": "^2.1.2"
+    "solhint": "^2.1.2",
+    "solhint-plugin-prettier": "0.0.3",
+    "truffle": "^5.0.30"
   }
 }
