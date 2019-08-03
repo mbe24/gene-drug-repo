@@ -2,7 +2,6 @@ pragma solidity ^0.5.8;
 pragma experimental ABIEncoderV2;
 
 contract GeneDrugRepo {
-    
     // This structure is how the data should be returned from the query function.
     // You do not have to store relations this way in your contract, only return them.
     // geneName and drugName must be in the same capitalization as it was entered.
@@ -10,31 +9,31 @@ contract GeneDrugRepo {
     // Percentage values must be acurrate to 6 decimal places and will not include a % sign. E.g. "35.123456"
     struct GeneDrugRelation {
         string geneName;
-        uint variantNumber;
+        uint256 variantNumber;
         string drugName;
-        uint totalCount;
-        uint improvedCount;
+        uint256 totalCount;
+        uint256 improvedCount;
         string improvedPercent;
-        uint unchangedCount;
+        uint256 unchangedCount;
         string unchangedPercent;
-        uint deterioratedCount;
+        uint256 deterioratedCount;
         string deterioratedPercent;
-        uint suspectedRelationCount;
+        uint256 suspectedRelationCount;
         string suspectedRelationPercent;
-        uint sideEffectCount;
+        uint256 sideEffectCount;
         string sideEffectPercent;
     }
-    
+
     /** Insert an observation into your contract, following the format defined in the data readme. 
         This function has no return value. If it completes it will be assumed the observations was recorded successfully. 
 
         Note: case matters for geneName and drugName. GyNx3 and gynx3 are treated as different genes.
      */
-    function insertObservation (
+    function insertObservation(
         string memory geneName,
-        uint variantNumber,
+        uint256 variantNumber,
         string memory drugName,
-        string memory outcome,  // IMPROVED, UNCHANGED, DETERIORATED. This will always be capitalized, you don't have to worry about case. 
+        string memory outcome, // IMPROVED, UNCHANGED, DETERIORATED. This will always be capitalized, you don't have to worry about case.
         bool suspectedRelation,
         bool seriousSideEffect
     ) public {
@@ -69,27 +68,31 @@ contract GeneDrugRepo {
         string memory geneName,
         string memory variantNumber,
         string memory drug
-    ) public view returns (bool){
+    ) public view returns (bool) {
         // Code here
     }
-    
+
     /** Return the total number of known relations, a.k.a. the number of unique geneName,-name, variant-number, drug-name pairs
      */
-    function getNumRelations () public view returns(uint){
+    function getNumRelations() public view returns (uint256) {
         // Code here
     }
-    
+
     /** Return the total number of recorded observations, regardless of sender.
      */
-    function getNumObservations() public view returns (uint) {
+    function getNumObservations() public view returns (uint256) {
         // Code here
     }
 
     /** Takes: A wallet address.
         Returns: The number of observations recorded from the provided wallet address
      */
-    function getNumObservationsFromSender(address sender) public view returns (uint) {
+    function getNumObservationsFromSender(address sender)
+        public
+        view
+        returns (uint256)
+    {
         // Code here
     }
-    
+
 }
