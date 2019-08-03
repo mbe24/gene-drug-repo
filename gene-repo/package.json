@@ -1,5 +1,5 @@
 {
-  "name": "truffel",
+  "name": "gene-repo",
   "version": "0.1.0",
   "description": "iDASH track 1",
   "scripts": {
@@ -24,7 +24,10 @@
     }
   ],
   "license": "LGPL-3.0",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "truffle": "^5.0.30",
+    "mocha": "^6.2.0",
     "solc": "^0.5.8",
     "solhint": "^2.1.2"
   }
