@@ -5,7 +5,8 @@ contract GeneDrugRepo {
     
     // This structure is how the data should be returned from the query function.
     // You do not have to store relations this way in your contract, only return them.
-    // geneName and drugName must be in the same capitalization as it was entered. E.g. if the original entry was GyNx3 then GYNX3 would be considered incorrect.
+    // geneName and drugName must be in the same capitalization as it was entered.
+    // E.g. if the original entry was GyNx3 then GYNX3 would be considered incorrect.
     // Percentage values must be acurrate to 6 decimal places and will not include a % sign. E.g. "35.123456"
     struct GeneDrugRelation {
         string geneName;
@@ -40,7 +41,8 @@ contract GeneDrugRepo {
         // Code here
     }
 
-    /** Takes geneName, variant-number, and drug-name as strings. A value of "*" for any name should be considered as a wildcard or alternatively as a null parameter.
+    /** Takes geneName, variant-number, and drug-name as strings.
+        A value of "*" for any name should be considered as a wildcard or alternatively as a null parameter.
         Returns: An array of GeneDrugRelation Structs which match the query parameters
 
         To clarify here are some example queries:
@@ -60,7 +62,8 @@ contract GeneDrugRepo {
     }
 
     /** Takes: geneName,-name, variant-number, and drug-name as strings. Accepts "*" as a wild card, same rules as query
-        Returns: A boolean value. True if the relation exists, false if not. If a wild card was used, then true if any relation exists which meets the non-wildcard criteria.
+        Returns: A boolean value. True if the relation exists, false if not. If a wild card was used,
+        then true if any relation exists which meets the non-wildcard criteria.
      */
     function entryExists(
         string memory geneName,

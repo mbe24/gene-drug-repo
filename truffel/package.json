@@ -1,0 +1,31 @@
+{
+  "name": "truffel",
+  "version": "0.1.0",
+  "description": "iDASH track 1",
+  "scripts": {
+    "contracts-lint": "solhint **/*.sol"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.scc.kit.edu/ph6889/i-dash.git"
+  },
+  "contributors": [
+    {
+      "name": "Niclas Kannengießer",
+      "email": "niclas.kannengiesser@kit.edu"
+    },
+    {
+      "name": "Konstantin Pandl",
+      "email": "konstantin.pandl@kit.edu"
+    },
+    {
+      "name": "Mikael Beyene",
+      "email": "mikael.beyene@kit.edu"
+    }
+  ],
+  "license": "LGPL-3.0",
+  "dependencies": {
+    "solc": "^0.5.8",
+    "solhint": "^2.1.2"
+  }
+}
