@@ -44,7 +44,7 @@ contract GeneDrugRepo {
 
     function decodeObject(uint8 encoded) public view returns (string memory outcome, bool suspectedRelation, bool seriousSideEffect) {
         seriousSideEffect = encoded & 0x01 == 1;
-        suspectedRelation = (encoded >> 1) & 0x01 == 1;
+        suspectedRelation = encoded & 0x02 == 2;
         outcome = outcomesReversed[(encoded >> 2) & 0x03];
     }
 
