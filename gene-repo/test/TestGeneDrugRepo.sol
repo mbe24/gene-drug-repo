@@ -6,11 +6,19 @@ import "../contracts/GeneDrugRepo.sol";
 
 contract TestGeneDrugRepo {
 
-    function test() public {
+    function testEncodeObject() public {
         GeneDrugRepo geneDrugRepo = GeneDrugRepo(DeployedAddresses.GeneDrugRepo());
 
-        bool expected = false;
-        Assert.equal(geneDrugRepo.entryExists("*", "*", "*"), expected, "It should return false.");
+        string memory expectedOutcome = "IMPROVED";
+        bool expectedSuspectedRelation = false;
+        bool expectedSeriousSideEffect = true;
+        
+        uint8 encoded = geneDrugRepo.encodeObject(expectedOutcome, expectedSuspectedRelation, expectedSeriousSideEffect);
+        (string memory outcome, bool suspectedRelation, bool seriousSideEffect) = geneDrugRepo.decodeObject(encoded);
+        
+        Assert.equal(outcome, expectedOutcome, "It should return IMPROVED.");
+        Assert.equal(seriousSideEffect, expectedSeriousSideEffect, "seriousSideEffect should return true.");
+        Assert.equal(suspectedRelation, expectedSuspectedRelation, "suspectedRelation should return false.");
     }
 
 }

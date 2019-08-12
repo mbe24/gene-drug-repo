@@ -11,3 +11,6 @@ node_modules/
 # Solidity Coverage
 coverage/
 coverage.json
+
+# Truffle
+build/

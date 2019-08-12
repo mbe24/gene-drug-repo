@@ -2,6 +2,52 @@ pragma solidity ^0.5.8;
 pragma experimental ABIEncoderV2;
 
 contract GeneDrugRepo {
+
+    uint16[2**22] observations;
+
+    mapping(string => uint8) geneNames;
+    mapping(string => uint8) drugNames;
+
+    mapping(string => uint8) outcomes;
+    mapping(uint8 => string) outcomesReversed;
+
+    constructor() public {
+        initializeGeneNames();
+        initializeDrugNames();
+        initializeOutcomes();
+    }
+
+    function initializeGeneNames() internal {
+        geneNames["HLA-B"] = 0;
+    }
+
+    function initializeDrugNames() internal {
+        drugNames["abacavir"] = 0;
+    }
+
+    function initializeOutcomes() internal {
+        outcomes["IMPROVED"] = 0x00;
+        outcomes["UNCHANGED"] = 0x01;
+        outcomes["DETERIORATED"] = 0x02;
+
+        outcomesReversed[0x00] = "IMPROVED";
+        outcomesReversed[0x01] = "UNCHANGED";
+        outcomesReversed[0x02] = "DETERIORATED";
+    }
+
+    function encodeObject(string memory outcome, bool suspectedRelation, bool seriousSideEffect) public view returns (uint8) {
+        uint8 encoded = outcomes[outcome] << 2 
+        | (suspectedRelation ? 0x01 : 0x00) << 1
+        | (seriousSideEffect ? 0x01 : 0x00);
+        return encoded;
+    }
+
+    function decodeObject(uint8 encoded) public view returns (string memory outcome, bool suspectedRelation, bool seriousSideEffect) {
+        seriousSideEffect = encoded & 0x01 == 1;
+        suspectedRelation = (encoded >> 1) & 0x01 == 1;
+        outcome = outcomesReversed[(encoded >> 2) & 0x03];
+    }
+
     // This structure is how the data should be returned from the query function.
     // You do not have to store relations this way in your contract, only return them.
     // geneName and drugName must be in the same capitalization as it was entered.
@@ -60,7 +106,7 @@ contract GeneDrugRepo {
         // Code here
     }
 
-    /** Takes: geneName,-name, variant-number, and drug-name as strings. Accepts "*" as a wild card, same rules as query
+    /** Takes: geneName, variant-number, and drug-name as strings. Accepts "*" as a wild card, same rules as query
         Returns: A boolean value. True if the relation exists, false if not. If a wild card was used,
         then true if any relation exists which meets the non-wildcard criteria.
      */
@@ -72,7 +118,7 @@ contract GeneDrugRepo {
         // Code here
     }
 
-    /** Return the total number of known relations, a.k.a. the number of unique geneName,-name, variant-number, drug-name pairs
+    /** Return the total number of known relations, a.k.a. the number of unique geneName, variant-number, drug-name pairs
      */
     function getNumRelations() public view returns (uint256) {
         // Code here
