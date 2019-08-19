@@ -50,9 +50,15 @@ contract GeneDrugRepo is Encoder {
         uint24 key = encodeKey(geneName, Util.itos(variantNumber), drugName);
         uint8 data = encodeData(outcome, suspectedRelation, seriousSideEffect);
 
-        uint16 dataMask = data; // translate data (only 4 bits) to single bit set in uint16
+        // translate data (only 4 bits) to single bit set in uint16
+        uint16 dataMask = uint16(1) << (0x0F & data);
 
         uint16 objects = observations[key];
+        if (objects & dataMask > 0)
+        {
+            // this is a duplicate entry
+        }
+
         observations[key] = objects | dataMask;
 
         if (objects == 0)
@@ -87,13 +93,13 @@ contract GeneDrugRepo is Encoder {
         // iterate over bits
         for (uint8 i = 0; i < 16; i++) {
             if (Util.testBit(objects, i)) {
-                GeneDrugRelation memory relation = getRelationForBit(key, i);
+                GeneDrugRelation memory relation = getRelation(key, i);
                 relations[i] = relation;
             }
         }
     }
 
-    function getRelationForBit(uint24 key, uint8 object) public view returns (GeneDrugRelation memory) {
+    function getRelation(uint24 key, uint8 object) public view returns (GeneDrugRelation memory) {
         (string memory geneName, string memory variantNumber, string memory drugName) = decodeKey(key);
         (string memory outcome, bool suspectedRelation, bool seriousSideEffect) = decodeData(object);
 
