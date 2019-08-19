@@ -1,7 +1,7 @@
 const GeneDrugRepo = artifacts.require("GeneDrugRepo");
-const DataEncoder = artifacts.require("DataEncoder");
+const Encoder = artifacts.require("Encoder");
 
 module.exports = function(deployer) {
   deployer.deploy(GeneDrugRepo);
-  deployer.deploy(DataEncoder);
+  deployer.deploy(Encoder);
 };

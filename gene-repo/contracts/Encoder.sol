@@ -1,7 +1,7 @@
 pragma solidity ^0.5.8;
 pragma experimental ABIEncoderV2;
 
-contract DataEncoder {
+contract Encoder {
 
     mapping(string => uint8) geneNames;
     mapping(string => uint8) drugNames;
@@ -62,7 +62,7 @@ contract DataEncoder {
 
     function decodeKey(
         uint24 encoded
-    ) public view returns (string memory geneName, string memory variantNumber, string memory drug) {
+    ) public view returns (string memory geneName, string memory variantNumber, string memory drugName) {
         // Code here
     }
 

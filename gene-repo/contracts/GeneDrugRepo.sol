@@ -1,11 +1,16 @@
 pragma solidity ^0.5.8;
 pragma experimental ABIEncoderV2;
 
-import "./DataEncoder.sol";
+import "./Encoder.sol";
+import "./Util.sol";
 
-contract GeneDrugRepo is DataEncoder {
+contract GeneDrugRepo is Encoder {
 
     uint16[2**22] observations;
+    uint256 uniqueKeys;
+    uint256 size;
+
+    mapping(address => uint256) observationsBySender;
 
     // This structure is how the data should be returned from the query function.
     // You do not have to store relations this way in your contract, only return them.
@@ -42,7 +47,19 @@ contract GeneDrugRepo is DataEncoder {
         bool suspectedRelation,
         bool seriousSideEffect
     ) public {
-        // Code here
+        uint24 key = encodeKey(geneName, Util.itos(variantNumber), drugName);
+        uint8 data = encodeData(outcome, suspectedRelation, seriousSideEffect);
+
+        uint16 dataMask = data; // translate data (only 4 bits) to single bit set in uint16
+
+        uint16 objects = observations[key];
+        observations[key] = objects | dataMask;
+
+        if (objects == 0)
+            uniqueKeys++;
+
+        size++;
+        observationsBySender[msg.sender]++;
     }
 
     /** Takes geneName, variant-number, and drug-name as strings.
@@ -62,7 +79,43 @@ contract GeneDrugRepo is DataEncoder {
         string memory variantNumber,
         string memory drug
     ) public view returns (GeneDrugRelation[] memory) {
-        // Code here
+        uint24 key = encodeKey(geneName, variantNumber, drug);
+        uint16 objects = observations[key];
+
+        GeneDrugRelation[16] memory relations;
+
+        // iterate over bits
+        for (uint8 i = 0; i < 16; i++) {
+            if (Util.testBit(objects, i)) {
+                GeneDrugRelation memory relation = getRelationForBit(key, i);
+                relations[i] = relation;
+            }
+        }
+    }
+
+    function getRelationForBit(uint24 key, uint8 object) public view returns (GeneDrugRelation memory) {
+        (string memory geneName, string memory variantNumber, string memory drugName) = decodeKey(key);
+        (string memory outcome, bool suspectedRelation, bool seriousSideEffect) = decodeData(object);
+
+        GeneDrugRelation memory relation = GeneDrugRelation(
+            {
+                geneName: geneName, 
+                variantNumber: Util.stoi(variantNumber),
+                drugName: drugName,
+                totalCount: size,
+                improvedCount: 0,
+                improvedPercent: "0.0",
+                unchangedCount: 0,
+                unchangedPercent: "0.0",
+                deterioratedCount: 0,
+                deterioratedPercent: "0.0",
+                suspectedRelationCount: 0,
+                suspectedRelationPercent: "0.0",
+                sideEffectCount: 0,
+                sideEffectPercent: "0.0"
+            }
+        );
+        return relation;
     }
 
     /** Takes: geneName, variant-number, and drug-name as strings. Accepts "*" as a wild card, same rules as query
@@ -74,19 +127,21 @@ contract GeneDrugRepo is DataEncoder {
         string memory variantNumber,
         string memory drug
     ) public view returns (bool) {
-        // Code here
+        uint24 key = encodeKey(geneName, variantNumber, drug);
+        uint16 objects = observations[key];
+        return objects > 0;
     }
 
     /** Return the total number of known relations, a.k.a. the number of unique geneName, variant-number, drug-name pairs
      */
     function getNumRelations() public view returns (uint256) {
-        // Code here
+        return uniqueKeys;
     }
 
     /** Return the total number of recorded observations, regardless of sender.
      */
     function getNumObservations() public view returns (uint256) {
-        // Code here
+        return size;
     }
 
     /** Takes: A wallet address.
@@ -97,7 +152,7 @@ contract GeneDrugRepo is DataEncoder {
         view
         returns (uint256)
     {
-        // Code here
+        return observationsBySender[sender];
     }
 
 }

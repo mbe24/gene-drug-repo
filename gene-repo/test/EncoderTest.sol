@@ -2,13 +2,13 @@ pragma solidity >=0.4.21 <0.6.0;
 
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
-import "../contracts/DataEncoder.sol";
+import "../contracts/Encoder.sol";
 //import "../contracts/GeneDrugRepo.sol";
 
-contract DataEncoderTest {
+contract EncoderTest {
 
     function testEncodeObject() public {
-        DataEncoder encoder = DataEncoder(DeployedAddresses.DataEncoder());
+        Encoder encoder = Encoder(DeployedAddresses.Encoder());
 
         string memory expectedOutcome = "IMPROVED";
         bool expectedSuspectedRelation = false;
