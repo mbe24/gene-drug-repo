@@ -1,6 +1,8 @@
 pragma solidity ^0.5.8;
 pragma experimental ABIEncoderV2;
 
+import "./Util.sol";
+
 contract Encoder {
 
     mapping(string => uint8) geneNames;
@@ -19,6 +21,7 @@ contract Encoder {
     }
 
     function initializeGeneNames() internal {
+        /*
         geneNamesReversed[0x00] = "ABCB1";
         geneNamesReversed[0x01] = "ABCC4";
         geneNamesReversed[0x02] = "ABCG2";
@@ -147,13 +150,15 @@ contract Encoder {
         geneNamesReversed[0x7d] = "XRCC1";
         geneNamesReversed[0x7e] = "YEATS4";
 
-        for (uint8 i = 0x00; i < 3; i++) {
+        for (uint8 i = 0x00; i < 127; i++) {
             string memory geneName = geneNamesReversed[i];
             geneNames[geneName] = i;
         } 
+        */
     }
 
     function initializeDrugNames() internal {
+        /*
         drugNamesReversed[0x00] = "abacavir";
         drugNamesReversed[0x01] = "Ace Inhibitors";
         drugNamesReversed[0x02] = "acenocoumarol";
@@ -384,7 +389,8 @@ contract Encoder {
         for (uint8 i = 0x00; i < 226; i++) {
             string memory drugName = drugNamesReversed[i];
             drugNames[drugName] = i;
-        } 
+        }
+        */
     }
 
     function initializeOutcomes() internal {
@@ -421,14 +427,31 @@ contract Encoder {
         string memory geneName,
         string memory variantNumber,
         string memory drug
-    ) public view returns (uint24) {
-        // Code here
+    ) public view returns (uint24 encoded) {
+        encoded = 0x00000000;
+
+        // 7 bit for gene name
+        uint8 gn = geneNames[geneName];
+        // 7 bit for variant number
+        uint8 vn = uint8(Util.stoi(variantNumber) % 256);
+        // 8 bit for drug name
+        uint8 dn = drugNames[drug];
+
+        encoded |= uint24(gn);
+        encoded |= uint24(vn) << 7;
+        encoded |= uint24(dn) << 14;
     }
 
     function decodeKey(
         uint24 encoded
     ) public view returns (string memory geneName, string memory variantNumber, string memory drugName) {
-        // Code here
+        uint8 gn = uint8(encoded & 0x0000007F);
+        uint8 vn = uint8((encoded & 0x00003F80) >> 7);
+        uint8 dn = uint8((encoded & 0x001FE000) >> 14);
+
+        geneName = geneNamesReversed[gn];
+        variantNumber = Util.itos(vn);
+        drugName = drugNamesReversed[dn];
     }
 
 }
