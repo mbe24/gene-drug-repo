@@ -14,3 +14,5 @@ coverage.json
 
 # Truffle
 build/
+
+tmp/

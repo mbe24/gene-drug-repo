@@ -7,6 +7,8 @@ import "../contracts/Encoder.sol";
 
 contract EncoderTest {
 
+    //Encoder encoder = Encoder(DeployedAddresses.Encoder());
+
     function testEncodeObject() public {
         Encoder encoder = Encoder(DeployedAddresses.Encoder());
 
@@ -20,6 +22,10 @@ contract EncoderTest {
         Assert.equal(outcome, expectedOutcome, "It should return IMPROVED.");
         Assert.equal(seriousSideEffect, expectedSeriousSideEffect, "seriousSideEffect should return true.");
         Assert.equal(suspectedRelation, expectedSuspectedRelation, "suspectedRelation should return false.");
+    }
+
+    function testEncodeKey() public {
+
     }
 
 }
