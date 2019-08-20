@@ -48,4 +48,3 @@ contract("Encoder", accounts => {
     });
 
 });
-

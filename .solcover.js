@@ -4,5 +4,5 @@ module.exports = {
     norpc: false,
     dir: '.',
     port: 8545,
-    skipFiles: ['contracts/Migrations.sol']
+    skipFiles: ['Migrations.sol', 'Util.sol']
 };

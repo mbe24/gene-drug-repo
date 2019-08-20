@@ -1,4 +1,4 @@
-# VisualStudioCode template
+# VisualStudio Code template
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -11,6 +11,8 @@ node_modules/
 # Solidity Coverage
 coverage/
 coverage.json
+CoverageEnv/
+scTopics
 
 # Truffle
 build/
