@@ -21,7 +21,7 @@ contract Encoder {
     }
 
     function initializeGeneNames() internal {
-        /*
+        
         geneNamesReversed[0x00] = "ABCB1";
         geneNamesReversed[0x01] = "ABCC4";
         geneNamesReversed[0x02] = "ABCG2";
@@ -154,11 +154,9 @@ contract Encoder {
             string memory geneName = geneNamesReversed[i];
             geneNames[geneName] = i;
         } 
-        */
     }
 
     function initializeDrugNames() internal {
-        /*
         drugNamesReversed[0x00] = "abacavir";
         drugNamesReversed[0x01] = "Ace Inhibitors";
         drugNamesReversed[0x02] = "acenocoumarol";
@@ -385,12 +383,11 @@ contract Encoder {
         drugNamesReversed[0xdf] = "vortioxetine";
         drugNamesReversed[0xe0] = "warfarin";
         drugNamesReversed[0xe1] = "zuclopenthixol";
-
+        
         for (uint8 i = 0x00; i < 226; i++) {
             string memory drugName = drugNamesReversed[i];
             drugNames[drugName] = i;
         }
-        */
     }
 
     function initializeOutcomes() internal {

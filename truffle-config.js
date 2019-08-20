@@ -42,12 +42,24 @@ module.exports = {
     // tab if you use this network and you must also set the `host`, `port` and `network_id`
     // options below to some value.
     //
-    /*
+    //migrations_directory: "./migrations",
+    
     development: {
       host: "127.0.0.1",     // Localhost (default: none)
       port: 7545,            // Standard Ethereum port (default: none)
       network_id: "*",       // Any network (default: none)
-      gas: 6721975
+      gas: 100000000,
+      gasPrice: 0x01
+    },
+    
+  
+    /*
+    coverage: {
+      host: "localhost",
+      network_id: "*",
+      port: 7545,         // <-- If you change this, also set the port option in .solcover.js.
+      gas: 0xfffffffffff, // <-- Use this high gas value
+      gasPrice: 0x01      // <-- Use this low gas price
     },
     */
 
