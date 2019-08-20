@@ -52,17 +52,14 @@ module.exports = {
       gasPrice: 0x01
     },
     
-  
-    /*
     coverage: {
-      host: "localhost",
-      network_id: "*",
-      port: 7545,         // <-- If you change this, also set the port option in .solcover.js.
-      gas: 0xfffffffffff, // <-- Use this high gas value
+      host: "127.0.0.1",
+      port: 8545,         // <-- If you change this, also set the port option in .solcover.js
+      network_id: "*",                
+      gas: 100000000,     // <-- Use this high gas value
       gasPrice: 0x01      // <-- Use this low gas price
     },
-    */
-
+    
     // Another network with more advanced options...
     // advanced: {
       // port: 8777,             // Custom port
@@ -94,7 +91,7 @@ module.exports = {
 
   // Set default mocha options here, use special reporters etc.
   mocha: {
-    // timeout: 100000
+    enableTimeouts: false
   },
 
   // Configure your compilers

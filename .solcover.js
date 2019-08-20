@@ -1,9 +1,8 @@
 module.exports = {
-    port: 7545,
-    testrpcOptions: '-p 7545 -u 0x54fd80d6ae7584d8e9a19fe1df43f04e5282cc43',
-    testCommand: 'mocha --timeout 5000',
-    norpc: true,
-    dir: './solcover-workdir',
-    copyPackages: ['openzeppelin-solidity'],
+    compileCommand: 'node --max-old-space-size=4096 ../node_modules/.bin/truffle compile',
+    testCommand: 'node --max-old-space-size=4096 ../node_modules/.bin/truffle test --network coverage',
+    norpc: false,
+    dir: '.',
+    port: 8545,
     skipFiles: ['contracts/Migrations.sol']
 };

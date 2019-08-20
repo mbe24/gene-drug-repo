@@ -21,7 +21,6 @@ contract Encoder {
     }
 
     function initializeGeneNames() internal {
-        
         geneNamesReversed[0x00] = "ABCB1";
         geneNamesReversed[0x01] = "ABCC4";
         geneNamesReversed[0x02] = "ABCG2";
