@@ -67,4 +67,66 @@ library Util {
             count++;
         }
     }
+
+    function digits(uint256 number) internal pure returns (uint8) {
+        uint8 d = 0;
+        while (number != 0) {
+            number /= 10;
+            d++;
+        }
+
+        return d;
+    }
+
+    /**
+        @notice Compute fractions with 6 decimals in percent
+     */
+    function fraction(uint256 numerator, uint256 denominator) public pure returns (string memory) {
+        uint256 decimals = 6;
+        uint256 percentFactor = 10**(decimals + 2);
+
+        uint256 quotient = (percentFactor * numerator) / denominator;
+        
+        uint256 realQuotient = (100 * quotient) / percentFactor;
+        uint256 realRemainder = quotient % (percentFactor / 100);
+
+        // round up number
+        if ((quotient % (percentFactor / 10)) % 10 >= 5)
+            realRemainder++;
+
+        string memory remainderString;
+        uint8 fillUp = 6 - digits(realRemainder);
+        if (fillUp > 0) {
+            if (realRemainder == 0)
+                fillUp--;
+
+            string memory pad = new string(fillUp);
+            bytes memory bytePad = bytes(pad);
+            for (uint8 i = 0; i < fillUp; i++)
+                bytePad[i] = "0";
+            
+            remainderString = strcat(itos(realRemainder), string(bytePad));
+        } else
+            remainderString = itos(realRemainder);
+        
+        return strcat(strcat(itos(realQuotient), "."), remainderString);
+    }
+
+    /**
+        @notice Concatenate two strings
+     */
+    function strcat(string memory _a, string memory _b) public pure  returns (string memory) {
+        bytes memory _ba = bytes(_a);
+        bytes memory _bb = bytes(_b);
+
+        string memory ab = new string(_ba.length + _bb.length);
+        bytes memory bab = bytes(ab);
+
+        uint k = 0;
+        for (uint i = 0; i < _ba.length; i++) bab[k++] = _ba[i];
+        for (uint i = 0; i < _bb.length; i++) bab[k++] = _bb[i];
+
+        return string(bab);
+    }
+
 }

@@ -97,7 +97,7 @@ contract GeneDrugRepo is Encoder {
         //uint8 setBits = uint8(Util.countSetBits(objects));
 
         // only fixed-sized arrays are currently possible
-        GeneDrugRelation[16] memory relations;
+        GeneDrugRelation[] memory relations = new GeneDrugRelation[](objects);
 
         uint256 totalCount = 0;
         uint256 improvedCount = 0;
@@ -166,15 +166,15 @@ contract GeneDrugRepo is Encoder {
                 drugName: drugName,
                 totalCount: totalCount,
                 improvedCount: improvedCount,
-                improvedPercent: "0.0",
+                improvedPercent: Util.fraction(improvedCount, totalCount),
                 unchangedCount: unchangedCount,
-                unchangedPercent: "0.0",
+                unchangedPercent: Util.fraction(unchangedCount, totalCount),
                 deterioratedCount: deterioratedCount,
-                deterioratedPercent: "0.0",
+                deterioratedPercent: Util.fraction(deterioratedCount, totalCount),
                 suspectedRelationCount: suspectedRelationCount,
-                suspectedRelationPercent: "0.0",
+                suspectedRelationPercent: Util.fraction(suspectedRelationCount, totalCount),
                 sideEffectCount: sideEffectCount,
-                sideEffectPercent: "0.0"
+                sideEffectPercent: Util.fraction(sideEffectCount, totalCount)
             }
         );
         return relation;

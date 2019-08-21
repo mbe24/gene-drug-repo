@@ -30,4 +30,32 @@ contract("Util", accounts => {
         assert.equal(isSet, false);
     });
 
+    it("should compute 1/3 in percent", async () => {
+        const util = await Util.new();
+        let percent = await util.fraction(1, 3);
+        
+        assert.equal(percent, "33.333333");
+    });
+
+    it("should compute 2/3 in percent", async () => {
+        const util = await Util.new();
+        let percent = await util.fraction(2, 3);
+        
+        assert.equal(percent, "66.666667");
+    });
+
+    it("should compute 3/2 in percent", async () => {
+        const util = await Util.new();
+        let percent = await util.fraction(3, 2);
+        
+        assert.equal(percent, "150.000000");
+    });
+
+    it("should compute 4/5 in percent", async () => {
+        const util = await Util.new();
+        let percent = await util.fraction(4, 5);
+        
+        assert.equal(percent, "80.000000");
+    });
+
 });
