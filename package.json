@@ -44,6 +44,7 @@
     "solc": "^0.5.8",
     "solhint": "^2.1.2",
     "solhint-plugin-prettier": "0.0.3",
-    "truffle": "^5.0.30"
+    "truffle": "^5.0.30",
+    "web3": "^1.2.1"
   }
 }
