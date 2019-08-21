@@ -7,6 +7,8 @@ import "./Util.sol";
 contract GeneDrugRepo is Encoder {
 
     uint16[2**22] observations;
+    mapping(uint32 => uint64) duplicateEntries;
+
     uint256 uniqueKeys;
     uint256 size;
 
@@ -53,14 +55,17 @@ contract GeneDrugRepo is Encoder {
         // translate data (only 4 bits) to single bit set in uint16
         uint16 dataMask = uint16(1) << (0x0F & data);
 
+        // get bitvector that contains all possible observations
         uint16 objects = observations[key];
-        if (objects & dataMask > 0)
-        {
-            // this is a duplicate entry
-        }
 
+        // set current observation in bitvector
         observations[key] = objects | dataMask;
 
+        // check if this is a duplicate entry
+        if (objects & dataMask > 0)
+            duplicateEntries[(uint32(key) << 8) + data]++;
+
+        // if there was no entry, this set of keys is unique
         if (objects == 0)
             uniqueKeys++;
 
@@ -88,36 +93,87 @@ contract GeneDrugRepo is Encoder {
         uint24 key = encodeKey(geneName, variantNumber, drug);
         uint16 objects = observations[key];
 
+        // use number of set bits as size
+        //uint8 setBits = uint8(Util.countSetBits(objects));
+
+        // only fixed-sized arrays are currently possible
         GeneDrugRelation[16] memory relations;
 
-        // iterate over bits
-        for (uint8 i = 0; i < 16; i++) {
+        uint256 totalCount = 0;
+        uint256 improvedCount = 0;
+        uint256 unchangedCount = 0;
+        uint256 deterioratedCount = 0;
+        uint256 suspectedRelationCount = 0;
+        uint256 sideEffectCount = 0;
+
+        // compute statistics
+        for (uint8 i = 0x00; i < 16; i++) {
+            // if bit is set, object with state 'i' exists
             if (Util.testBit(objects, i)) {
-                GeneDrugRelation memory relation = getRelation(key, i);
-                relations[i] = relation;
+                uint256 objectCount = 1;
+                objectCount += duplicateEntries[(uint32(key) << 8) + i];
+
+                // test set bits in i and increase count variables
+                if (i & 0x01 == 1)
+                    sideEffectCount += objectCount;
+
+                if (i & 0x02 == 2)
+                    suspectedRelationCount += objectCount;
+
+                if ((i >> 2) & 0x03 == 0)
+                    improvedCount += objectCount;
+
+                if ((i >> 2) & 0x03 == 1)
+                    unchangedCount += objectCount;
+
+                if ((i >> 2) & 0x03 == 2)
+                    deterioratedCount += objectCount;
+
+                totalCount += objectCount;
             }
         }
+
+        // iterate over bits
+        uint8 index = 0;
+        GeneDrugRelation memory relation = createRelation(
+            key,
+            totalCount,
+            improvedCount,
+            unchangedCount,
+            deterioratedCount,
+            suspectedRelationCount,
+            sideEffectCount
+            );
+        relations[index++] = relation;
     }
 
-    function getRelation(uint24 key, uint8 object) public view returns (GeneDrugRelation memory) {
+    function createRelation(
+        uint24 key,
+        uint256 totalCount,
+        uint256 improvedCount,
+        uint256 unchangedCount,
+        uint256 deterioratedCount,
+        uint256 suspectedRelationCount,
+        uint256 sideEffectCount
+        ) 
+    public view returns (GeneDrugRelation memory) {
         (string memory geneName, string memory variantNumber, string memory drugName) = decodeKey(key);
-        (string memory outcome, bool suspectedRelation, bool seriousSideEffect) = decodeData(object);
-
+        
         GeneDrugRelation memory relation = GeneDrugRelation(
             {
                 geneName: geneName, 
                 variantNumber: Util.stoi(variantNumber),
                 drugName: drugName,
-                totalCount: size,
-                improvedCount: 0,
+                totalCount: totalCount,
+                improvedCount: improvedCount,
                 improvedPercent: "0.0",
-                unchangedCount: 0,
+                unchangedCount: unchangedCount,
                 unchangedPercent: "0.0",
-                deterioratedCount: 0,
+                deterioratedCount: deterioratedCount,
                 deterioratedPercent: "0.0",
-                suspectedRelationCount: 0,
+                suspectedRelationCount: suspectedRelationCount,
                 suspectedRelationPercent: "0.0",
-                sideEffectCount: 0,
+                sideEffectCount: sideEffectCount,
                 sideEffectPercent: "0.0"
             }
         );

@@ -53,4 +53,18 @@ library Util {
     function testBit(uint256 n, uint8 pos) public pure returns (bool) {
         return (n & (uint256(1) << pos)) > 0;
     }
+
+    /**
+        @notice Test if bit is set
+        @dev Brian Kernighan's algorithm
+     */
+    function countSetBits(uint256 n) public pure returns (uint256 count) {
+        count = 0;
+
+        uint256 _n = n;
+        while (_n != 0) {
+            _n = _n & (_n - 1);
+            count++;
+        }
+    }
 }
