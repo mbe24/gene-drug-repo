@@ -90,14 +90,15 @@ contract GeneDrugRepo is Encoder {
         string memory variantNumber,
         string memory drug
     ) public view returns (GeneDrugRelation[] memory) {
+        // in case of wildcards create multiple keys
         uint24 key = encodeKey(geneName, variantNumber, drug);
-        uint16 objects = observations[key];
 
+        // size of array should be equal to number of keys
+        GeneDrugRelation[] memory relations = new GeneDrugRelation[](1);
+
+        uint16 objects = observations[key];
         // use number of set bits as size
         //uint8 setBits = uint8(Util.countSetBits(objects));
-
-        // only fixed-sized arrays are currently possible
-        GeneDrugRelation[] memory relations = new GeneDrugRelation[](objects);
 
         uint256 totalCount = 0;
         uint256 improvedCount = 0;
@@ -133,7 +134,7 @@ contract GeneDrugRepo is Encoder {
             }
         }
 
-        // iterate over bits
+        // create one GeneDrugRelation per key
         uint8 index = 0;
         GeneDrugRelation memory relation = createRelation(
             key,

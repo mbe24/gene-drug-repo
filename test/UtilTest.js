@@ -58,4 +58,11 @@ contract("Util", accounts => {
         assert.equal(percent, "80.000000");
     });
 
+    it("should compute 4/3 in percent", async () => {
+        const util = await Util.new();
+        let percent = await util.fraction(4, 3);
+        
+        assert.equal(percent, "133.333333");
+    });
+
 });
