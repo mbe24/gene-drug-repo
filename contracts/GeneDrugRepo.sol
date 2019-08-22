@@ -174,7 +174,7 @@ contract GeneDrugRepo is Encoder {
 
     function deriveKeys(uint24 key) public view returns (uint24[] memory) {
         (bool allGenes, bool allVariants, bool allDrugs) = detectKeyWildcards(key);
-
+                      
         uint24 mask = 0xFFFFFF;
         uint24 bits = key;
         if (allGenes) {
@@ -263,10 +263,8 @@ contract GeneDrugRepo is Encoder {
         if (allGenes && allVariants && allDrugs)
             return size > 0;
 
-        // TODO get keys
-
-        uint16 objects = observations[key];
-        return objects > 0;
+        uint24[] memory keys = deriveKeys(key);
+        return keys.length > 0;
     }
 
     /** Return the total number of known relations, a.k.a. the number of unique geneName, variant-number, drug-name pairs
