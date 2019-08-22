@@ -68,14 +68,14 @@ library Util {
         }
     }
 
-    function digits(uint256 number) internal pure returns (uint8) {
-        uint8 d = 0;
+    /**
+        @notice Count digits of a given number
+     */
+    function digits(uint256 number) internal pure returns (uint8 d) {
         while (number != 0) {
             number /= 10;
             d++;
         }
-
-        return d;
     }
 
     /**
@@ -115,18 +115,25 @@ library Util {
     /**
         @notice Concatenate two strings
      */
-    function strcat(string memory _a, string memory _b) public pure  returns (string memory) {
-        bytes memory _ba = bytes(_a);
-        bytes memory _bb = bytes(_b);
+    function strcat(string memory first, string memory second) public pure  returns (string memory) {
+        bytes memory byteFirst = bytes(first);
+        bytes memory byteSecond = bytes(second);
 
-        string memory ab = new string(_ba.length + _bb.length);
-        bytes memory bab = bytes(ab);
+        string memory concatenated = new string(byteFirst.length + byteSecond.length);
+        bytes memory byteConcatenated = bytes(concatenated);
 
         uint k = 0;
-        for (uint i = 0; i < _ba.length; i++) bab[k++] = _ba[i];
-        for (uint i = 0; i < _bb.length; i++) bab[k++] = _bb[i];
+        for (uint i = 0; i < byteFirst.length; i++) byteConcatenated[k++] = byteFirst[i];
+        for (uint i = 0; i < byteSecond.length; i++) byteConcatenated[k++] = byteSecond[i];
 
-        return string(bab);
+        return string(byteConcatenated);
+    }
+
+    /**
+        @notice Compare two strings
+     */
+    function strcmp (string memory a, string memory b) public pure  returns (bool) {
+        return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
     }
 
 }

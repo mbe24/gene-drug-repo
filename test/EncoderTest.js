@@ -46,5 +46,24 @@ contract("Encoder", accounts => {
         assert.equal(variantNumber, expectedVariantNumber);
         assert.equal(drugName, expectedDrugName);
     });
+    
+    it("should detect all wildcards", async () => {
+        const enc = await Encoder.new();
+
+        let expectedGeneName = "*"
+        let expectedVariantNumber = "*";
+        let expectedDrugName = "*";
+
+        let encoded = await enc.encodeKey(expectedGeneName, expectedVariantNumber, expectedDrugName);
+        let ret = await enc.detectKeyWildcards(encoded);
+
+        let allGenes =  ret[0];
+        let allVariants = ret[1];
+        let allDrugs = ret[2];
+
+        assert.equal(allGenes, true);
+        assert.equal(allVariants, true);
+        assert.equal(allDrugs, true);
+    });
 
 });

@@ -93,59 +93,64 @@ contract GeneDrugRepo is Encoder {
         // in case of wildcards create multiple keys
         uint24 key = encodeKey(geneName, variantNumber, drug);
 
+        uint24[] memory keys = new uint24[](1);
+        keys[0] = key;
+
         // size of array should be equal to number of keys
-        GeneDrugRelation[] memory relations = new GeneDrugRelation[](1);
+        GeneDrugRelation[] memory relations = new GeneDrugRelation[](keys.length);
 
-        uint16 objects = observations[key];
-        // use number of set bits as size
-        //uint8 setBits = uint8(Util.countSetBits(objects));
+        for (uint24 x = 0; x < keys.length; x++) {
+            uint24 k = keys[x];
+            uint16 objects = observations[k];
+            // use number of set bits as size
+            //uint8 setBits = uint8(Util.countSetBits(objects));
 
-        uint256 totalCount = 0;
-        uint256 improvedCount = 0;
-        uint256 unchangedCount = 0;
-        uint256 deterioratedCount = 0;
-        uint256 suspectedRelationCount = 0;
-        uint256 sideEffectCount = 0;
+            uint256 totalCount = 0;
+            uint256 improvedCount = 0;
+            uint256 unchangedCount = 0;
+            uint256 deterioratedCount = 0;
+            uint256 suspectedRelationCount = 0;
+            uint256 sideEffectCount = 0;
 
-        // compute statistics
-        for (uint8 i = 0x00; i < 16; i++) {
-            // if bit is set, object with state 'i' exists
-            if (Util.testBit(objects, i)) {
-                uint256 objectCount = 1;
-                objectCount += duplicateEntries[(uint32(key) << 8) + i];
+            // compute statistics
+            for (uint8 i = 0x00; i < 16; i++) {
+                // if bit is set, object with state 'i' exists
+                if (Util.testBit(objects, i)) {
+                    uint256 objectCount = 1;
+                    objectCount += duplicateEntries[(uint32(k) << 8) + i];
 
-                // test set bits in i and increase count variables
-                if (i & 0x01 == 1)
-                    sideEffectCount += objectCount;
+                    // test set bits in i and increase count variables
+                    if (i & 0x01 == 1)
+                        sideEffectCount += objectCount;
 
-                if (i & 0x02 == 2)
-                    suspectedRelationCount += objectCount;
+                    if (i & 0x02 == 2)
+                        suspectedRelationCount += objectCount;
 
-                if ((i >> 2) & 0x03 == 0)
-                    improvedCount += objectCount;
+                    if ((i >> 2) & 0x03 == 0)
+                        improvedCount += objectCount;
 
-                if ((i >> 2) & 0x03 == 1)
-                    unchangedCount += objectCount;
+                    if ((i >> 2) & 0x03 == 1)
+                        unchangedCount += objectCount;
 
-                if ((i >> 2) & 0x03 == 2)
-                    deterioratedCount += objectCount;
+                    if ((i >> 2) & 0x03 == 2)
+                        deterioratedCount += objectCount;
 
-                totalCount += objectCount;
+                    totalCount += objectCount;
+                }
             }
-        }
 
-        // create one GeneDrugRelation per key
-        uint8 index = 0;
-        GeneDrugRelation memory relation = createRelation(
-            key,
-            totalCount,
-            improvedCount,
-            unchangedCount,
-            deterioratedCount,
-            suspectedRelationCount,
-            sideEffectCount
+            // create one GeneDrugRelation per key
+            GeneDrugRelation memory relation = createRelation(
+                k,
+                totalCount,
+                improvedCount,
+                unchangedCount,
+                deterioratedCount,
+                suspectedRelationCount,
+                sideEffectCount    
             );
-        relations[index++] = relation;
+            relations[x] = relation;
+        }
     }
 
     function createRelation(

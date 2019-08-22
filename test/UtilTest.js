@@ -65,4 +65,21 @@ contract("Util", accounts => {
         assert.equal(percent, "133.333333");
     });
 
+    it("should compare two strings", async () => {
+        const util = await Util.new();
+        let equal = await util.strcmp("abc*", "abc*");
+        
+        assert.equal(equal, true);
+    });
+
+    it("should convert integer", async () => {
+        const util = await Util.new();
+        let i = await util.stoi("10");
+        
+        assert.equal(i, 10);
+        assert.equal(i % 256, 10);
+        assert.equal(i > 0x00, true);
+        assert.equal(i < 0x64, true);
+    });
+
 });
