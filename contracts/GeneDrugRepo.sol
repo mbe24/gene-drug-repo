@@ -90,20 +90,39 @@ contract GeneDrugRepo is Encoder {
         string memory variantNumber,
         string memory drug
     ) public view returns (GeneDrugRelation[] memory) {
-        // in case of wildcards create multiple keys
         uint24 key = encodeKey(geneName, variantNumber, drug);
+        (bool allGenes, bool allVariants, bool allDrugs) = detectKeyWildcards(key);
 
-        uint24[] memory keys = new uint24[](1);
-        keys[0] = key;
+        uint24[] memory keys;
+        uint24 uniqueKeysInQuery;
+        bool wildCardOnly = false;
+        if (allGenes && allVariants && allDrugs) {
+            wildCardOnly = true;
+
+            for (uint24 i = 0; i < observations.length; i++) {
+                if (observations[i] > 0)
+                    uniqueKeysInQuery++;
+            }
+        } else {
+            keys = deriveKeys(key);
+            uniqueKeysInQuery = uint24(keys.length);
+        }
 
         // size of array should be equal to number of keys
-        GeneDrugRelation[] memory relations = new GeneDrugRelation[](keys.length);
+        GeneDrugRelation[] memory relations = new GeneDrugRelation[](uniqueKeysInQuery);
 
-        for (uint24 x = 0; x < keys.length; x++) {
-            uint24 k = keys[x];
+        uint24 length = uint24(keys.length);
+        if (wildCardOnly)
+            length = 2*22;
+
+        for (uint24 x = 0; x < length; x++) {
+            uint24 k;
+            if (wildCardOnly)
+                k = x;
+            else
+                k = keys[x];
+
             uint16 objects = observations[k];
-            // use number of set bits as size
-            //uint8 setBits = uint8(Util.countSetBits(objects));
 
             uint256 totalCount = 0;
             uint256 improvedCount = 0;
@@ -153,6 +172,49 @@ contract GeneDrugRepo is Encoder {
         }
     }
 
+    function deriveKeys(uint24 key) public view returns (uint24[] memory) {
+        (bool allGenes, bool allVariants, bool allDrugs) = detectKeyWildcards(key);
+
+        uint24 mask = 0xFFFFFF;
+        uint24 bits = key;
+        if (allGenes) {
+            mask &= uint24(~0x0000007F);
+            bits &= uint24(~0x0000007F);
+        }
+            
+        if (allVariants) {
+            mask &= uint24(~0x00003F80);
+            bits &= uint24(~0x00003F80);
+        }
+            
+        if (allDrugs) {
+            mask &= uint24(~0x003FC000);
+            bits &= uint24(~0x003FC000);
+        }
+        
+        uint24 entries = 0;
+        // cf. https://stackoverflow.com/questions/18556410/data-structure-for-partial-multi-keys-mapping
+        uint24 k = bits;
+        do {
+            k = (((k | mask) + 1) & (~mask)) | bits;
+
+            if (observations[k] > 0)
+                entries++;
+        } while (k != bits);
+
+        uint24[] memory keys = new uint24[](entries);
+        uint24 index = 0;
+        do {
+            k = (((k | mask) + 1) & (~mask)) | bits;
+
+            if (observations[k] > 0)
+                keys[index++] = k;
+                
+        } while (k != bits);
+
+        return keys;
+    }
+
     function createRelation(
         uint24 key,
         uint256 totalCount,
@@ -196,6 +258,13 @@ contract GeneDrugRepo is Encoder {
         string memory drug
     ) public view returns (bool) {
         uint24 key = encodeKey(geneName, variantNumber, drug);
+        (bool allGenes, bool allVariants, bool allDrugs) = detectKeyWildcards(key);
+
+        if (allGenes && allVariants && allDrugs)
+            return size > 0;
+
+        // TODO get keys
+
         uint16 objects = observations[key];
         return objects > 0;
     }
