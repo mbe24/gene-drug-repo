@@ -104,6 +104,7 @@ contract GeneDrugRepo is Encoder {
                     uniqueKeysInQuery++;
             }
         } else {
+            // TODO use derive keys everywhere, since there is no (external) gas cost
             keys = deriveKeys(key);
             uniqueKeysInQuery = uint24(keys.length);
         }
@@ -170,6 +171,8 @@ contract GeneDrugRepo is Encoder {
             );
             relations[x] = relation;
         }
+
+        return relations;
     }
 
     function deriveKeys(uint24 key) public view returns (uint24[] memory) {
