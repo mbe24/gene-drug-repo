@@ -7,9 +7,10 @@ import "./Util.sol";
 contract GeneDrugRepo is Encoder {
 
     uint16[2**22] observations;
-    mapping(uint32 => uint64) duplicateEntries;
+    //mapping(uint24 => uint16) observationsMap;
 
-    uint256 uniqueKeys;
+    uint24[] uniqueKeys;
+    mapping(uint32 => uint64) duplicateEntries;
     uint256 size;
 
     mapping(address => uint256) observationsBySender;
@@ -66,8 +67,9 @@ contract GeneDrugRepo is Encoder {
             duplicateEntries[(uint32(key) << 8) + data]++;
 
         // if there was no entry, this set of keys is unique
-        if (objects == 0)
-            uniqueKeys++;
+        if (objects == 0) {
+            uniqueKeys.push(key);
+        }
 
         size++;
         observationsBySender[msg.sender]++;
@@ -94,35 +96,17 @@ contract GeneDrugRepo is Encoder {
         (bool allGenes, bool allVariants, bool allDrugs) = detectKeyWildcards(key);
 
         uint24[] memory keys;
-        uint24 uniqueKeysInQuery;
-        bool wildCardOnly = false;
-        if (allGenes && allVariants && allDrugs) {
-            wildCardOnly = true;
-
-            for (uint24 i = 0; i < observations.length; i++) {
-                if (observations[i] > 0)
-                    uniqueKeysInQuery++;
-            }
-        } else {
-            // TODO use derive keys everywhere, since there is no (external) gas cost
+        if (allGenes && allVariants && allDrugs)
+            //keys = retrieveKeys();
+            keys = uniqueKeys;
+        else
             keys = deriveKeys(key);
-            uniqueKeysInQuery = uint24(keys.length);
-        }
 
         // size of array should be equal to number of keys
-        GeneDrugRelation[] memory relations = new GeneDrugRelation[](uniqueKeysInQuery);
+        GeneDrugRelation[] memory relations = new GeneDrugRelation[](keys.length);
 
-        uint24 length = uint24(keys.length);
-        if (wildCardOnly)
-            length = 2*22;
-
-        for (uint24 x = 0; x < length; x++) {
-            uint24 k;
-            if (wildCardOnly)
-                k = x;
-            else
-                k = keys[x];
-
+        for (uint24 x = 0; x < keys.length; x++) {
+            uint24 k = keys[x];
             uint16 objects = observations[k];
 
             uint256 totalCount = 0;
@@ -218,6 +202,10 @@ contract GeneDrugRepo is Encoder {
         return keys;
     }
 
+    function retrieveKeys() public view returns (uint24[] memory) {
+        return uniqueKeys;
+    }
+
     function createRelation(
         uint24 key,
         uint256 totalCount,
@@ -273,7 +261,7 @@ contract GeneDrugRepo is Encoder {
     /** Return the total number of known relations, a.k.a. the number of unique geneName, variant-number, drug-name pairs
      */
     function getNumRelations() public view returns (uint256) {
-        return uniqueKeys;
+        return uniqueKeys.length;
     }
 
     /** Return the total number of recorded observations, regardless of sender.

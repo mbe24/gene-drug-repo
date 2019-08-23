@@ -227,4 +227,23 @@ contract("GeneDrugRepo", accounts => {
         assert.equal(exists, true);
     });
 
+    it("should retrieve all set keys", async () => {
+        const repo = await GeneDrugRepo.new();
+        let expectedGeneName = "ABCB1"
+        let expectedVariantNumber = "10";
+        let drugs = ["antipsychotics", "antidepressants", "ataluren", "diazepam"];
+        for (const drug of drugs) {
+            await repo.insertObservation(
+                expectedGeneName,
+                parseInt(expectedVariantNumber),
+                drug,
+                "IMPROVED",
+                true,
+                true
+                );
+        }
+        let keys = await repo.retrieveKeys();
+        assert.equal(keys.length, drugs.length);
+    });
+
 });
