@@ -6,9 +6,7 @@ import "./Util.sol";
 
 contract GeneDrugRepo is Encoder {
 
-    uint16[2**22] observations;
-    //mapping(uint24 => uint16) observationsMap;
-
+    mapping(uint24 => uint16) observations;
     uint24[] uniqueKeys;
     mapping(uint32 => uint64) duplicateEntries;
     uint256 size;
@@ -202,6 +200,7 @@ contract GeneDrugRepo is Encoder {
         return keys;
     }
 
+    // method is only kept for testing purposes
     function retrieveKeys() public view returns (uint24[] memory) {
         return uniqueKeys;
     }
@@ -236,6 +235,7 @@ contract GeneDrugRepo is Encoder {
                 sideEffectPercent: Util.fraction(sideEffectCount, totalCount)
             }
         );
+
         return relation;
     }
 
